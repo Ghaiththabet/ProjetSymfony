@@ -19,6 +19,10 @@ class Projet
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $projetdesc = null;
 
+    #[ORM\ManyToOne(inversedBy: 'projets')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Hackathon $hackathon = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -44,6 +48,18 @@ class Projet
     public function setProjetdesc(?string $projetdesc): static
     {
         $this->projetdesc = $projetdesc;
+
+        return $this;
+    }
+
+    public function getHackathon(): ?Hackathon
+    {
+        return $this->hackathon;
+    }
+
+    public function setHackathon(?Hackathon $hackathon): static
+    {
+        $this->hackathon = $hackathon;
 
         return $this;
     }

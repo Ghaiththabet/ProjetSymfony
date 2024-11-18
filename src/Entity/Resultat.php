@@ -19,6 +19,9 @@ class Resultat
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $commentaire = null;
 
+    #[ORM\OneToOne(mappedBy: 'resultat', cascade: ['persist', 'remove'])]
+    private ?Quiz $quiz = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -44,6 +47,23 @@ class Resultat
     public function setCommentaire(?string $commentaire): static
     {
         $this->commentaire = $commentaire;
+
+        return $this;
+    }
+
+    public function getQuiz(): ?Quiz
+    {
+        return $this->quiz;
+    }
+
+    public function setQuiz(Quiz $quiz): static
+    {
+        // set the owning side of the relation if necessary
+        if ($quiz->getResultat() !== $this) {
+            $quiz->setResultat($this);
+        }
+
+        $this->quiz = $quiz;
 
         return $this;
     }

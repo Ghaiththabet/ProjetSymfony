@@ -3,9 +3,13 @@
 namespace App\Entity;
 
 use App\Repository\UtilisateurRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UtilisateurRepository::class)]
+#[ORM\InheritanceType("SINGLE_TABLE")]
+#[ORM\DiscriminatorColumn(name: "role", type: "string")]
+#[ORM\DiscriminatorMap(["admin" => "Admin", "etudiant" => "Etudiant", "enseignant" => "Enseignant"])]
 class Utilisateur
 {
     #[ORM\Id]
@@ -13,8 +17,7 @@ class Utilisateur
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?int $idUser = null;
+   
 
     #[ORM\Column(length: 50)]
     private ?string $Username = null;
@@ -25,22 +28,23 @@ class Utilisateur
     #[ORM\Column(length: 255)]
     private ?string $UserPwd = null;
 
+    #[ORM\ManyToOne(inversedBy: 'utilisateurs')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Evenement $evenments = null;
+
+    #[ORM\Column(type: Types::JSON)]
+    private array $roles = [];
+
     public function getId(): ?int
     {
         return $this->id;
     }
-
-    public function getIdUser(): ?int
+    public function __construct()
     {
-        return $this->idUser;
+        // Par défaut, l'utilisateur n'a pas de rôle spécifique
+        $this->roles = [];
     }
-
-    public function setIdUser(int $idUser): static
-    {
-        $this->idUser = $idUser;
-
-        return $this;
-    }
+    
 
     public function getUsername(): ?string
     {
@@ -74,6 +78,30 @@ class Utilisateur
     public function setUserPwd(string $UserPwd): static
     {
         $this->UserPwd = $UserPwd;
+
+        return $this;
+    }
+
+    public function getEvenments(): ?Evenement
+    {
+        return $this->evenments;
+    }
+
+    public function setEvenments(?Evenement $evenments): static
+    {
+        $this->evenments = $evenments;
+
+        return $this;
+    }
+
+    public function getRoles(): array
+    {
+        return $this->roles;
+    }
+
+    public function setRoles(array $roles): static
+    {
+        $this->roles = $roles;
 
         return $this;
     }

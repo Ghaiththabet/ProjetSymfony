@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\CoursRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -20,8 +22,28 @@ class Cours
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $CoursDesc = null;
 
-    #[ORM\Column(type: Types::ARRAY)]
-    private array $CoursRessources = [];
+    
+
+    #[ORM\OneToOne(inversedBy: 'cours', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Enseignant $enseignant = null;
+
+    #[ORM\OneToOne(inversedBy: 'cours', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Quiz $quiz = null;
+
+    /**
+     * @var Collection<int, Etudiant>
+     */
+    #[ORM\ManyToMany(targetEntity: Etudiant::class, inversedBy: 'cours')]
+    private Collection $etudiants;
+
+    public function __construct()
+    {
+        $this->etudiants = new ArrayCollection();
+    }
+
+   
 
     public function getId(): ?int
     {
@@ -52,14 +74,50 @@ class Cours
         return $this;
     }
 
-    public function getCoursRessources(): array
+    public function getEnseignant(): ?Enseignant
     {
-        return $this->CoursRessources;
+        return $this->enseignant;
     }
 
-    public function setCoursRessources(array $CoursRessources): static
+    public function setEnseignant(Enseignant $enseignant): static
     {
-        $this->CoursRessources = $CoursRessources;
+        $this->enseignant = $enseignant;
+
+        return $this;
+    }
+
+    public function getQuiz(): ?Quiz
+    {
+        return $this->quiz;
+    }
+
+    public function setQuiz(Quiz $quiz): static
+    {
+        $this->quiz = $quiz;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Etudiant>
+     */
+    public function getEtudiants(): Collection
+    {
+        return $this->etudiants;
+    }
+
+    public function addEtudiant(Etudiant $etudiant): static
+    {
+        if (!$this->etudiants->contains($etudiant)) {
+            $this->etudiants->add($etudiant);
+        }
+
+        return $this;
+    }
+
+    public function removeEtudiant(Etudiant $etudiant): static
+    {
+        $this->etudiants->removeElement($etudiant);
 
         return $this;
     }

@@ -17,8 +17,11 @@ class Feedback
     #[ORM\Column(length: 255)]
     private ?string $contenu = null;
 
-    #[ORM\Column(type: Types::OBJECT)]
-    private ?object $etudiant = null;
+    #[ORM\ManyToOne(inversedBy: 'feedbacks')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Etudiant $etudiants = null;
+
+    
 
     public function getId(): ?int
     {
@@ -37,15 +40,17 @@ class Feedback
         return $this;
     }
 
-    public function getEtudiant(): ?object
+    public function getEtudiants(): ?Etudiant
     {
-        return $this->etudiant;
+        return $this->etudiants;
     }
 
-    public function setEtudiant(object $etudiant): static
+    public function setEtudiants(?Etudiant $etudiants): static
     {
-        $this->etudiant = $etudiant;
+        $this->etudiants = $etudiants;
 
         return $this;
     }
+
+    
 }
